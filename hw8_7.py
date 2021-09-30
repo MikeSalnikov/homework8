@@ -4,6 +4,7 @@
 # Проверьте работу проекта, создав экземпляры класса (комплексные числа)
 # и выполнив сложение и умножение созданных экземпляров.
 # Проверьте корректность полученного результата.
+
 class ComplexNumber:
     def __init__(self, x, y, *args):
         self.x1 = x
@@ -21,7 +22,7 @@ class ComplexNumber:
         return f'x = {self.x1} + {self.x2} * i'
 
 
-x1 = ComplexNumber(2, -5)
+x1 = ComplexNumber(2, -4)
 x2 = ComplexNumber(5, 6)
 print(x1 + x2)
 print(x1 * x2)
