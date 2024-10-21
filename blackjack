@@ -1,0 +1,157 @@
+import os
+import random
+
+decks = input("Введите количество колод для использования: ")
+
+# user chooses number of decks of cards to use
+deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]*(int(decks)*4)
+
+# initialize scores
+wins = 0
+losses = 0
+
+def deal(deck):
+    hand = []
+    for i in range(2):
+        random.shuffle(deck)
+        card = deck.pop()
+        if card == 11:card = "J"
+        if card == 12:card = "Q"
+        if card == 13:card = "K"
+        if card == 14:card = "A"
+        hand.append(card)
+    return hand
+
+def play_again():
+    again = input("Сыграем еще? (Д/Н) : ").lower()
+    if again == "д":
+        dealer_hand = []
+        player_hand = []
+        deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]*4
+        game()
+    else:
+        print("Пока!")
+        exit()
+
+def total(hand):
+    total = 0
+    for card in hand:
+        if card == "J" or card == "Q" or card == "K":
+            total+= 10
+        elif card == "A":
+            if total >= 11: total+= 1
+            else: total+= 11
+        else: total += card
+    return total
+
+def hit(hand):
+    card = deck.pop()
+    if card == 11:card = "J"
+    if card == 12:card = "Q"
+    if card == 13:card = "K"
+    if card == 14:card = "A"
+    hand.append(card)
+    return hand
+
+def clear():
+    if os.name == 'nt':
+        os.system('CLS')
+    if os.name == 'posix':
+        os.system('clear')
+
+def print_results(dealer_hand, player_hand):
+    clear()
+
+    print("\n    Сыграем в БлэкДжек!\n")
+    print("-"*30+"\n")
+    print("    \033[1;32;40mWINS:  \033[1;37;40m%s   \033[1;31;40mLOSSES:  \033[1;37;40m%s\n" % (wins, losses))
+    print("-"*30+"\n")
+    print ("У Диллера " + str(dealer_hand) + " общий счет " + str(total(dealer_hand)))
+    print ("У тебя " + str(player_hand) + " общий счет " + str(total(player_hand)))
+
+def blackjack(dealer_hand, player_hand):
+    global wins
+    global losses
+    if total(player_hand) == 21:
+        print_results(dealer_hand, player_hand)
+        print ("Поздравлямба! Blackjack, теперь можно Лунапарк построить!\n")
+        wins += 1
+        play_again()
+    elif total(dealer_hand) == 21:
+        print_results(dealer_hand, player_hand)
+        print ("Сорян, ты проиграл. Диллер собрал БЛЭКДжек, пошел за Шлю.\n")
+        losses += 1
+        play_again()
+
+def score(dealer_hand, player_hand):
+        # score function now updates to global win/loss variables
+        global wins
+        global losses
+        if total(player_hand) == 21:
+            print_results(dealer_hand, player_hand)
+            print ("Поздравлямба! Blackjack, теперь можно Лунапарк построить!\n")
+            wins += 1
+        elif total(dealer_hand) == 21:
+            print_results(dealer_hand, player_hand)
+            print ("Сорян, ты проиграл. У Диллера Блэкжек и вот это все.\n")
+            losses += 1
+        elif total(player_hand) > 21:
+            print_results(dealer_hand, player_hand)
+            print ("Перебор(( . Ты проиграл.\n")
+            losses += 1
+        elif total(dealer_hand) > 21:
+            print_results(dealer_hand, player_hand)
+            print ("У Диллера Перебор!. ты победил!\n")
+            wins += 1
+        elif total(player_hand) < total(dealer_hand):
+            print_results(dealer_hand, player_hand)
+            print ("Сорян. Твой счет ниже чем у Диллера. Ты проиграл.\n")
+            losses += 1
+        elif total(player_hand) > total(dealer_hand):
+            print_results(dealer_hand, player_hand)
+            print ("Поздравлямба. Твой счет больше чем у Диллера. Ты победил\n")
+            wins += 1
+
+def game():
+    global wins
+    global losses
+    choice = 0
+    clear()
+    print("\n    WELCOME TO BLACKJACK!\n")
+    print("-"*30+"\n")
+    print("    \033[1;32;40mWINS:  \033[1;37;40m%s   \033[1;31;40mLOSSES:  \033[1;37;40m%s\n" % (wins, losses))
+    print("-"*30+"\n")
+    dealer_hand = deal(deck)
+    player_hand = deal(deck)
+    print ("У Диллера -  " + str(dealer_hand[0]))
+    print ("Твои карты " + str(player_hand) + " общий счет " + str(total(player_hand)))
+    blackjack(dealer_hand, player_hand)
+    quit=False
+    while not quit:
+        choice = input("Че делать будем: [Д]обрать, [О]становиться, или домой пора [В]ыход: ").lower()
+        if choice == 'д':
+            hit(player_hand)
+            print(player_hand)
+            print("Итого на руках: " + str(total(player_hand)))
+            if total(player_hand)>21:
+                print('Перебор(( ')
+                losses += 1
+                play_again()
+        elif choice=='о':
+            while total(dealer_hand)<17:
+                hit(dealer_hand)
+                print(dealer_hand)
+                if total(dealer_hand)>21:
+                    print('У Диллера Перебор!, ты победил!')
+                    wins += 1
+                    play_again()
+            score(dealer_hand,player_hand)
+            play_again()
+        elif choice == "в":
+            print("Пока!")
+            quit=True
+            exit()
+
+
+if __name__ == "__main__":
+   game()
